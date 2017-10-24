@@ -35,6 +35,8 @@ extern NSInteger const RMStoreErrorCodeUnableToCompleteVerification;
  */
 @interface RMStore : NSObject<SKPaymentTransactionObserver>
 
+@property (nonatomic) BOOL (^shouldAddStorePaymentHandler)(SKPayment *payment, SKProduct *product);
+
 ///---------------------------------------------
 /// @name Getting the Store
 ///---------------------------------------------
