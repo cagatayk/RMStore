@@ -101,7 +101,7 @@ RMStore supports this with a new handler, called like this:
     }];
 
     return NO;
-}
+};
 ```
 
 To test this in sandbox mode, open this URL in Safari:
