@@ -73,6 +73,44 @@ NSSet *products = [NSSet setWithArray:@[@"fabulousIdol", @"rootBeer", @"rubberCh
 }];
 ```
 
+
+### Should add store payment handling (iOS 11)
+
+iOS 11 adds a new delegate method on `SKPaymentTransactionObserver`:
+
+```objective-c
+@optional
+// Sent when a user initiates an IAP buy from the App Store
+- (BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product NS_SWIFT_NAME(paymentQueue(_:shouldAddStorePayment:for:)) NS_AVAILABLE_IOS(11_0);
+```
+
+From [Apple Docs](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver/2877502-paymentqueue?language=objc):
+
+> This delegate method is called when the user has started an in-app purchase in the App Store, and is continuing the transaction in your app. Specifically, if your app is already installed, the method is called automatically.
+If your app is not yet installed when the user starts the in-app purchase in the App Store, the user gets a notification when the app installation is complete. This method is called when the user taps the notification. Otherwise, if the user opens the app manually, this method is called only if the app is opened soon after the purchase was started.
+
+RMStore supports this with a new handler, called like this:
+
+```objective-c
+[RMStore defaultStore].shouldAddStorePaymentHandler = ^BOOL(SKPayment *payment, SKProduct *product) {
+    
+    [[RMStore defaultStore] addPayment:product.productIdentifier success:^(SKPaymentTransaction *transaction) {
+        NSLog(@"Purchased!");
+    } failure:^(SKPaymentTransaction *transaction, NSError *error) {
+        NSLog(@"Something went wrong");
+    }];
+
+    return NO;
+}
+```
+
+To test this in sandbox mode, open this URL in Safari:
+
+```
+itms-services://?action=purchaseIntent&bundleId=com.example.app&productIdentifier=product_name
+```
+
+
 ##Notifications
 
 RMStore sends notifications of StoreKit related events and extends `NSNotification` to provide relevant information. To receive them, implement the desired methods of the `RMStoreObserver` protocol and add the observer to `RMStore`.
